@@ -1,0 +1,5 @@
+.cache
+.modcache
+.mongo-data
+main
+.env.dev
