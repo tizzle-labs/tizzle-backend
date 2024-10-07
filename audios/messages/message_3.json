@@ -1,0 +1,14 @@
+{
+  "metadata": {
+    "soundFile": "/Users/iqbalutomo/hackathon/talking-avatar-with-ai/apps/backend/audios/message_2.wav",
+    "duration": 0.78
+  },
+  "mouthCues": [
+    { "start": 0.00, "end": 0.06, "value": "X" },
+    { "start": 0.06, "end": 0.11, "value": "B" },
+    { "start": 0.11, "end": 0.30, "value": "E" },
+    { "start": 0.30, "end": 0.37, "value": "F" },
+    { "start": 0.37, "end": 0.54, "value": "A" },
+    { "start": 0.54, "end": 0.78, "value": "X" }
+  ]
+}

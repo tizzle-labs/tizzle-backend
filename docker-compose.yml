@@ -2,6 +2,8 @@ services:
   app:
     build:
       context: .
+      platforms:
+        - linux/amd64
     container_name: app
     environment:
       GOMODCACHE: /go/src/app/.modcache

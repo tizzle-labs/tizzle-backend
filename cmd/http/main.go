@@ -1,26 +1,34 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
 	"os"
 	"tizzle-backend/config"
+	"tizzle-backend/internal/controllers"
+	"tizzle-backend/internal/middlewares"
+	"tizzle-backend/internal/repository"
+	"tizzle-backend/internal/routes"
+	"tizzle-backend/internal/services/elevenlabs"
+	"tizzle-backend/internal/services/openai"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
-	mongodb := config.ConnectDB().Database(os.Getenv("MONGO_DBNAME"))
-	_ = mongodb
+	mongodb := config.ConnectDB().Database(os.Getenv("DB_NAME"))
+	oai := config.InitOpenAI()
+	elabs := config.InitElevenLabs()
 
 	r := gin.Default()
+	r.Use(middlewares.CORS())
 
-	r.GET("", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": fmt.Sprintf("server running on port %s lfg!", os.Getenv("PORT")),
-		})
-	})
+	openAIService := openai.NewOpenAIService(oai)
+	evelenLabsService := elevenlabs.NewElevenLabs(*elabs)
+
+	agentRepo := repository.NewAgentRepository(mongodb)
+	agentController := controllers.NewAgentController(agentRepo, openAIService, evelenLabsService)
+
+	routes.Gin(r, agentController)
 
 	r.Run(":" + os.Getenv("PORT"))
 }
