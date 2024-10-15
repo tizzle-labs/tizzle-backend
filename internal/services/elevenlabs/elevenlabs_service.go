@@ -27,15 +27,16 @@ func NewElevenLabs(elabs ElevenLabService) *ElevenLabService {
 	}
 }
 
-func (e *ElevenLabService) ConvertTexttoSpeech(text, filename string) error {
+func (e *ElevenLabService) ConvertTexttoSpeech(text, filename, agentName string) error {
 	client := elevenlabs.NewClient(context.Background(), e.APIKey, 30*time.Second)
+	voiceID := utils.GetAgentVoiceID(agentName)
 
 	ttsReq := elevenlabs.TextToSpeechRequest{
 		Text:    text,
 		ModelID: e.ModelID,
 	}
 
-	audio, err := client.TextToSpeech(e.VoiceID, ttsReq)
+	audio, err := client.TextToSpeech(voiceID, ttsReq)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -47,7 +48,7 @@ func (e *ElevenLabService) ConvertTexttoSpeech(text, filename string) error {
 	return nil
 }
 
-func (e *ElevenLabService) LipSync(messages []models.Message) ([]models.Message, error) {
+func (e *ElevenLabService) LipSync(messages []models.Message, agentName string) ([]models.Message, error) {
 	basePath, err := os.Getwd()
 	if err != nil {
 		return nil, err
@@ -56,7 +57,7 @@ func (e *ElevenLabService) LipSync(messages []models.Message) ([]models.Message,
 	for idx, msg := range messages {
 		fileName := filepath.Join(basePath, "..", "..", "audios", "messages", fmt.Sprintf("message_%d.mp3", idx))
 
-		if err := e.ConvertTexttoSpeech(msg.Text, fileName); err != nil {
+		if err := e.ConvertTexttoSpeech(msg.Text, fileName, agentName); err != nil {
 			break
 		}
 	}

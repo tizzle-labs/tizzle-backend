@@ -54,14 +54,14 @@ func (a *AgentController) PostTextToSpeech(c *gin.Context) {
 		return
 	}
 
-	resp, err := a.openai.CallChatOpenAI(agent.Prompt + "\nUser: " + userMessage)
+	resp, err := a.openai.CallChatOpenAI(agent.Prompt, userMessage)
 	if err != nil {
 		status, errResp := utils.ErrInternalServer.GinFormatDetails(err.Error())
 		c.JSON(status, errResp)
 		return
 	}
 
-	resp, err = a.elevenlabs.LipSync(resp)
+	resp, err = a.elevenlabs.LipSync(resp, agentName)
 	if err != nil {
 		status, errResp := utils.ErrInternalServer.GinFormatDetails(err.Error())
 		c.JSON(status, errResp)
