@@ -6,6 +6,7 @@ import (
 	"log"
 	"tizzle-backend/internal/helpers"
 	"tizzle-backend/internal/models"
+	"tizzle-backend/internal/utils"
 
 	"github.com/sashabaranov/go-openai"
 )
@@ -36,8 +37,14 @@ func (oai *OpenAIService) CallChatOpenAI(agentPrompt, userMessage string) ([]mod
 		return nil, err
 	}
 
+	rawResp := resp.Choices[0].Message.Content
+	cleanedContent := utils.CleanOpenAIResponse(rawResp)
+
+	log.Println("raw resp:", rawResp)
+	log.Println("cleaned resp:", cleanedContent)
+
 	var messages []models.Message
-	err = json.Unmarshal([]byte(resp.Choices[0].Message.Content), &messages)
+	err = json.Unmarshal([]byte(cleanedContent), &messages)
 	if err != nil {
 		log.Printf("error unmarshaling response: %v", err)
 		return helpers.DefaultResponse, nil

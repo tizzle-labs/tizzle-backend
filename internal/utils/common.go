@@ -2,6 +2,8 @@ package utils
 
 import (
 	"os"
+	"regexp"
+	"strings"
 	"time"
 )
 
@@ -20,4 +22,10 @@ func GetAgentVoiceID(agentName string) string {
 	default:
 		return os.Getenv("CORTEZ_VOICE_ID")
 	}
+}
+
+func CleanOpenAIResponse(response string) string {
+	re := regexp.MustCompile("(?s)```json(.*?)```")
+	cleanedResponse := re.ReplaceAllString(response, "$1")
+	return strings.TrimSpace(cleanedResponse)
 }
