@@ -28,7 +28,10 @@ func main() {
 	agentRepo := repository.NewAgentRepository(mongodb)
 	agentController := controllers.NewAgentController(agentRepo, openAIService, evelenLabsService)
 
-	routes.Gin(r, agentController)
+	userRepo := repository.NewUserRepository(mongodb)
+	userController := controllers.NewUserController(userRepo)
+
+	routes.Gin(r, agentController, userController)
 
 	r.Run(":" + os.Getenv("PORT"))
 }
