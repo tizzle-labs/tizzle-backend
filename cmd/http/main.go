@@ -31,7 +31,10 @@ func main() {
 	userRepo := repository.NewUserRepository(mongodb)
 	userController := controllers.NewUserController(userRepo)
 
-	routes.Gin(r, agentController, userController)
+	tokenRepo := repository.NewTokenRepository(mongodb)
+	tokenController := controllers.NewTokenController(tokenRepo)
+
+	routes.Gin(r, agentController, userController, tokenController)
 
 	r.Run(":" + os.Getenv("PORT"))
 }

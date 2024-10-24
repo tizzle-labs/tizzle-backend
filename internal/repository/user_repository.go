@@ -14,6 +14,7 @@ import (
 type User interface {
 	Create(data *models.User) error
 	FindNByAccountID(accountID string) (*models.User, error)
+	UpdateToken(accountID string, token int) error
 }
 
 type UserRepository struct {
@@ -51,4 +52,26 @@ func (u *UserRepository) FindNByAccountID(accountID string) (*models.User, error
 	}
 
 	return &user, nil
+}
+
+func (u *UserRepository) UpdateToken(accountID string, token int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"account_id": accountID}
+	update := bson.M{
+		"$set": bson.M{
+			"tokens": token,
+		},
+	}
+
+	_, err := u.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return errors.New("no-result")
+		}
+		return err
+	}
+
+	return nil
 }
