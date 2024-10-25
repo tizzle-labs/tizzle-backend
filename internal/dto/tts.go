@@ -1,7 +1,8 @@
 package dto
 
 type TtsMessageRequest struct {
-	Message string `json:"message"`
+	Message   string `json:"message"`
+	AccountId string `json:"account_id"`
 }
 
 type TextToSpeechRequest struct {

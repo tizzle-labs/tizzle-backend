@@ -25,11 +25,11 @@ func main() {
 	openAIService := openai.NewOpenAIService(oai)
 	evelenLabsService := elevenlabs.NewElevenLabs(*elabs)
 
-	agentRepo := repository.NewAgentRepository(mongodb)
-	agentController := controllers.NewAgentController(agentRepo, openAIService, evelenLabsService)
-
 	userRepo := repository.NewUserRepository(mongodb)
 	userController := controllers.NewUserController(userRepo)
+
+	agentRepo := repository.NewAgentRepository(mongodb)
+	agentController := controllers.NewAgentController(agentRepo, openAIService, evelenLabsService, userRepo)
 
 	tokenRepo := repository.NewTokenRepository(mongodb)
 	tokenController := controllers.NewTokenController(tokenRepo)
