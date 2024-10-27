@@ -42,8 +42,8 @@ func InsufficientMessages(agentName, userMessage string) ([]models.Message, erro
 			return nil, err
 		}
 
-		audio0Path := filepath.Join(basePath, "..", "..", "audios", agentName, fmt.Sprintf("%s_insufficient_0.wav", agentName))
-		lipsync0Path := filepath.Join(basePath, "..", "..", "audios", agentName, fmt.Sprintf("%s_insufficient_0.json", agentName))
+		audio0Path := filepath.Join(basePath, "audios", agentName, fmt.Sprintf("%s_insufficient_0.wav", agentName))
+		lipsync0Path := filepath.Join(basePath, "audios", agentName, fmt.Sprintf("%s_insufficient_0.json", agentName))
 
 		audio0, err := utils.AudioFileToBase64(audio0Path)
 		if err != nil {

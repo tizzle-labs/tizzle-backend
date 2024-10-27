@@ -2,6 +2,7 @@
 .modcache
 .mongo-data
 tmp
+.env
 .env.dev
-bin
+bin.mac
 .DS_Store

@@ -66,10 +66,10 @@ func GetPhonemes(messageIndex int) error {
 		return err
 	}
 
-	mp3Path := filepath.Join(basePath, "..", "..", "audios", "messages", fmt.Sprintf("message_%d.mp3", messageIndex))
-	wavPath := filepath.Join(basePath, "..", "..", "audios", "messages", fmt.Sprintf("message_%d.wav", messageIndex))
-	jsonPath := filepath.Join(basePath, "..", "..", "audios", "messages", fmt.Sprintf("message_%d.json", messageIndex))
-	rhubarbPath := filepath.Join(basePath, "..", "..", "bin", "rhubarb")
+	mp3Path := filepath.Join(basePath, "audios", "messages", fmt.Sprintf("message_%d.mp3", messageIndex))
+	wavPath := filepath.Join(basePath, "audios", "messages", fmt.Sprintf("message_%d.wav", messageIndex))
+	jsonPath := filepath.Join(basePath, "audios", "messages", fmt.Sprintf("message_%d.json", messageIndex))
+	rhubarbPath := filepath.Join(basePath, "bin", "rhubarb")
 
 	command := fmt.Sprintf("ffmpeg -y -i %s %s", mp3Path, wavPath)
 	_, err = ExecCommand(command)

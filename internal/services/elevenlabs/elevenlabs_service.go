@@ -55,7 +55,7 @@ func (e *ElevenLabService) LipSync(messages []models.Message, agentName string) 
 	}
 
 	for idx, msg := range messages {
-		fileName := filepath.Join(basePath, "..", "..", "audios", "messages", fmt.Sprintf("message_%d.mp3", idx))
+		fileName := filepath.Join(basePath, "audios", "messages", fmt.Sprintf("message_%d.mp3", idx))
 
 		if err := e.ConvertTexttoSpeech(msg.Text, fileName, agentName); err != nil {
 			break
@@ -63,7 +63,7 @@ func (e *ElevenLabService) LipSync(messages []models.Message, agentName string) 
 	}
 
 	for idx := range messages {
-		fileName := filepath.Join(basePath, "..", "..", "audios", "messages", fmt.Sprintf("message_%d.mp3", idx))
+		fileName := filepath.Join(basePath, "audios", "messages", fmt.Sprintf("message_%d.mp3", idx))
 
 		if err := utils.GetPhonemes(idx); err != nil {
 			return nil, err
@@ -75,7 +75,7 @@ func (e *ElevenLabService) LipSync(messages []models.Message, agentName string) 
 		}
 		messages[idx].Audio = audioBase64
 
-		jsonFileName := filepath.Join(basePath, "..", "..", "audios", "messages", fmt.Sprintf("message_%d.json", idx))
+		jsonFileName := filepath.Join(basePath, "audios", "messages", fmt.Sprintf("message_%d.json", idx))
 		lipSyncData, err := utils.ReadJsonTranscript(jsonFileName)
 		if err != nil {
 			return nil, err
