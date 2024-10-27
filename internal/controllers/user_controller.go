@@ -82,7 +82,16 @@ func (u *UserController) UpdateToken(c *gin.Context) {
 		return
 	}
 
-	if err := u.repo.UpdateToken(accountID, bodyReq.Token); err != nil {
+	currUser, err := u.repo.FindNByAccountID(accountID)
+	if err != nil {
+		status, errResp := utils.ErrInternalServer.GinFormatDetails(err.Error())
+		c.JSON(status, errResp)
+		return
+	}
+
+	totalToken := bodyReq.Token + int(currUser.Tokens)
+
+	if err := u.repo.UpdateToken(accountID, totalToken); err != nil {
 		if err.Error() == "no-result" {
 			c.JSON(http.StatusNotFound, dto.Response{
 				Message: "Account not found",
