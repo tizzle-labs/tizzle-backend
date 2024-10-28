@@ -13,14 +13,15 @@ import (
 )
 
 type AgentController struct {
-	agentRepo  repository.Agent
-	openai     *openai.OpenAIService
-	elevenlabs *elevenlabs.ElevenLabService
-	userRepo   repository.User
+	agentRepo            repository.Agent
+	openai               *openai.OpenAIService
+	elevenlabs           *elevenlabs.ElevenLabService
+	userRepo             repository.User
+	messageHistoriesRepo repository.MessageHistories
 }
 
-func NewAgentController(agentRepo repository.Agent, openai *openai.OpenAIService, elevenlabs *elevenlabs.ElevenLabService, userRepo repository.User) *AgentController {
-	return &AgentController{agentRepo, openai, elevenlabs, userRepo}
+func NewAgentController(agentRepo repository.Agent, openai *openai.OpenAIService, elevenlabs *elevenlabs.ElevenLabService, userRepo repository.User, messageHistoriesRepo repository.MessageHistories) *AgentController {
+	return &AgentController{agentRepo, openai, elevenlabs, userRepo, messageHistoriesRepo}
 }
 
 func (a *AgentController) PostTextToSpeech(c *gin.Context) {
@@ -39,7 +40,16 @@ func (a *AgentController) PostTextToSpeech(c *gin.Context) {
 		return
 	}
 
+	// user collection
 	user, err := a.userRepo.FindNByAccountID(bodyReq.AccountId)
+	if err != nil {
+		status, errResp := utils.ErrInternalServer.GinFormatDetails(err.Error())
+		c.JSON(status, errResp)
+		return
+	}
+
+	// message_histories collection
+	messageHistories, err := a.messageHistoriesRepo.FindByAccountID(bodyReq.AccountId)
 	if err != nil {
 		status, errResp := utils.ErrInternalServer.GinFormatDetails(err.Error())
 		c.JSON(status, errResp)
@@ -76,8 +86,14 @@ func (a *AgentController) PostTextToSpeech(c *gin.Context) {
 		return
 	}
 
-	resp, err := a.openai.CallChatOpenAI(agent.Prompt, bodyReq.Message)
+	resp, err := a.openai.CallChatOpenAI(agent.Prompt, bodyReq.Message, messageHistories.Messages)
 	if err != nil {
+		status, errResp := utils.ErrInternalServer.GinFormatDetails(err.Error())
+		c.JSON(status, errResp)
+		return
+	}
+
+	if err := a.messageHistoriesRepo.Update(bodyReq.AccountId, bodyReq.Message); err != nil {
 		status, errResp := utils.ErrInternalServer.GinFormatDetails(err.Error())
 		c.JSON(status, errResp)
 		return

@@ -4,5 +4,6 @@
 tmp
 .env
 .env.dev
+bin.linux
 bin.mac
 .DS_Store

@@ -19,13 +19,19 @@ func NewOpenAIService(openai *openai.Client) *OpenAIService {
 	return &OpenAIService{openai}
 }
 
-func (oai *OpenAIService) CallChatOpenAI(agentPrompt, userMessage string) ([]models.Message, error) {
+func (oai *OpenAIService) CallChatOpenAI(agentPrompt, userMessage string, messageHistory []models.Messages) ([]models.Message, error) {
+	var historyText string
+	for _, msg := range messageHistory {
+		historyText += "User: " + msg.User + "\n"
+	}
+	fullPrompt := agentPrompt + "\n\n" + "Message History:\n" + historyText
+
 	resp, err := oai.openai.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
 		Model: openai.GPT4oMini20240718,
 		Messages: []openai.ChatCompletionMessage{
 			{
 				Role:    openai.ChatMessageRoleSystem,
-				Content: agentPrompt,
+				Content: fullPrompt,
 			},
 			{
 				Role:    openai.ChatMessageRoleUser,

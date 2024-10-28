@@ -13,11 +13,12 @@ import (
 )
 
 type UserController struct {
-	repo repository.User
+	repo               repository.User
+	messageHistoryRepo repository.MessageHistories
 }
 
-func NewUserController(repo repository.User) *UserController {
-	return &UserController{repo}
+func NewUserController(repo repository.User, messageHistoryRepo repository.MessageHistories) *UserController {
+	return &UserController{repo, messageHistoryRepo}
 }
 
 func (u *UserController) PostNewUser(c *gin.Context) {
@@ -36,6 +37,20 @@ func (u *UserController) PostNewUser(c *gin.Context) {
 	}
 
 	if err := u.repo.Create(dataUser); err != nil {
+		status, errResp := utils.ErrInternalServer.GinFormatDetails(err.Error())
+		c.JSON(status, errResp)
+		return
+	}
+
+	if err := u.messageHistoryRepo.Create(&models.MessageHistories{
+		ID:        primitive.NewObjectID(),
+		AccountID: bodyReq.AccountID,
+		Messages: []models.Messages{
+			{
+				User: "my account id / wallet address is " + bodyReq.AccountID,
+			},
+		},
+	}); err != nil {
 		status, errResp := utils.ErrInternalServer.GinFormatDetails(err.Error())
 		c.JSON(status, errResp)
 		return
