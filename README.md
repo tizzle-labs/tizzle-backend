@@ -21,7 +21,7 @@ Backend API for Tizzle - Refundable Staking Ticketing Protocol on Solana.
 - ✅ Registration system with on-chain verification
 - ✅ Organization management
 - ✅ Badge system for users
-- ✅ File upload to Cloudflare R2 (avatars, event images)
+- ✅ **Image upload to Cloudflare R2** (avatars, event images, badges)
 - ✅ Caching with Redis
 - ✅ Multi-token support (SOL, SPL Token, Token-2022)
 - ✅ Comprehensive error handling
@@ -97,7 +97,7 @@ docker run -p 3000:3000 --env-file .env tizzle-backend
 Once the server is running, visit:
 
 - Swagger UI: `http://localhost:3000/docs`
-- API Base URL: `http://localhost:3000/api/v1`
+- API Base URL: `http://localhost:3000/v1`
 
 ## Environment Variables
 
@@ -105,7 +105,7 @@ Once the server is running, visit:
 
 - `NODE_ENV`: Environment (development/production)
 - `PORT`: Server port (default: 3000)
-- `API_PREFIX`: API prefix (default: api/v1)
+- `API_PREFIX`: API prefix (default: v1)
 
 ### Solana
 
@@ -139,60 +139,78 @@ Once the server is running, visit:
 
 ## API Endpoints
 
+### Storage
+
+- `POST /v1/storage/upload` - Upload image (generic)
+- `POST /v1/storage/upload/avatar` - Upload user avatar
+- `POST /v1/storage/upload/organization-avatar` - Upload organization avatar
+- `POST /v1/storage/upload/event-image` - Upload event image
+- `POST /v1/storage/upload/badge-image` - Upload badge image
+- `DELETE /v1/storage/:fileUrl` - Delete file
+
 ### Authentication
 
-- `POST /api/v1/auth/nonce` - Generate nonce for wallet
-- `POST /api/v1/auth/verify` - Verify signature and login
-- `GET /api/v1/auth/me` - Get current user
-- `POST /api/v1/auth/refresh` - Refresh token
+- `POST /v1/auth/nonce` - Generate nonce for wallet
+- `POST /v1/auth/verify` - Verify signature and login
+- `GET /v1/auth/me` - Get current user
+- `POST /v1/auth/refresh` - Refresh token
+
+### Storage
+
+- `POST /v1/storage/upload` - Upload image (generic)
+- `POST /v1/storage/upload/avatar` - Upload user avatar
+- `POST /v1/storage/upload/organization-avatar` - Upload org avatar
+- `POST /v1/storage/upload/event-image` - Upload event image
+- `POST /v1/storage/upload/badge-image` - Upload badge image
+- `DELETE /v1/storage/:fileUrl` - Delete file
 
 ### Users
 
-- `GET /api/v1/users/profile` - Get user profile
-- `PATCH /api/v1/users/profile` - Update profile
-- `POST /api/v1/users/avatar` - Upload avatar
+- `GET /v1/users/profile` - Get user profile
+- `PATCH /v1/users/profile` - Update profile
+- `POST /v1/users/avatar` - Upload avatar
 
 ### Organizations
 
-- `POST /api/v1/organizations` - Create organization
-- `GET /api/v1/organizations` - List organizations
-- `GET /api/v1/organizations/:id` - Get organization
-- `PATCH /api/v1/organizations/:id` - Update organization
-- `POST /api/v1/organizations/:id/avatar` - Upload avatar
+- `POST /v1/organizations` - Create organization
+- `GET /v1/organizations` - List organizations
+- `GET /v1/organizations/:id` - Get organization
+- `PATCH /v1/organizations/:id` - Update organization
+- `POST /v1/organizations/:id/avatar` - Upload avatar
 
 ### Events
 
-- `POST /api/v1/events` - Create event
-- `GET /api/v1/events` - List events
-- `GET /api/v1/events/:id` - Get event details
-- `PATCH /api/v1/events/:id` - Update event
-- `POST /api/v1/events/:id/image` - Upload event image
-- `GET /api/v1/events/:id/registrations` - Get registrations
-- `GET /api/v1/events/:id/analytics` - Get analytics
+- `POST /v1/events` - Create event
+- `GET /v1/events` - List events
+- `GET /v1/events/:id` - Get event details
+- `PATCH /v1/events/:id` - Update event
+- `POST /v1/events/:id/image` - Upload event image
+- `GET /v1/events/:id/registrations` - Get registrations
+- `GET /v1/events/:id/analytics` - Get analytics
 
 ### Registrations
 
-- `POST /api/v1/registrations` - Register for event
-- `GET /api/v1/registrations/:id` - Get registration
-- `POST /api/v1/registrations/:id/checkin` - Check-in attendee
+- `POST /v1/registrations` - Register for event
+- `GET /v1/registrations/:id` - Get registration
+- `POST /v1/registrations/:id/checkin` - Check-in attendee
 
 ### Badges
 
-- `GET /api/v1/badges` - List all badges
-- `GET /api/v1/badges/user` - Get user badges
-- `GET /api/v1/badges/:id` - Get badge details
+- `GET /v1/badges` - List all badges
+- `GET /v1/badges/user` - Get user badges
+- `GET /v1/badges/:id` - Get badge details
 
 ### Analytics
 
-- `GET /api/v1/analytics/protocol` - Protocol metrics
-- `GET /api/v1/analytics/tvl` - Total value locked
+- `GET /v1/analytics/protocol` - Protocol metrics
+- `GET /v1/analytics/tvl` - Total value locked
 
 ## Authentication Flow
 
 1. **Request Nonce**
 
    ```bash
-   POST /api/v1/auth/nonce
+   POST /v1/auth/nonce
    {
      "walletAddress": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
    }
@@ -204,7 +222,7 @@ Once the server is running, visit:
 3. **Verify Signature**
 
    ```bash
-   POST /api/v1/auth/verify
+   POST /v1/auth/verify
    {
      "walletAddress": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
      "signature": "base58_encoded_signature",

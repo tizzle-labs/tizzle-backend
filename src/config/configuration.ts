@@ -2,7 +2,7 @@ export default () => ({
   app: {
     nodeEnv: process.env.NODE_ENV || 'development',
     port: parseInt(process.env.PORT, 10) || 3000,
-    apiPrefix: process.env.API_PREFIX || 'api/v1',
+    apiPrefix: process.env.API_PREFIX || 'v1',
   },
   solana: {
     network: process.env.SOLANA_NETWORK || 'devnet',
