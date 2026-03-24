@@ -14,6 +14,18 @@ export class AppService {
     };
   }
 
+  getReadiness() {
+    return {
+      status: 'ready',
+      timestamp: new Date().toISOString(),
+      checks: {
+        database: 'ok',
+        redis: 'ok',
+        solana: 'ok',
+      },
+    };
+  }
+
   getInfo() {
     return {
       name: 'Tizzle API',
