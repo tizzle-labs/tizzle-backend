@@ -1,98 +1,259 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Tizzle Backend API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend API for Tizzle - Refundable Staking Ticketing Protocol on Solana.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tech Stack
 
-## Description
+- **Framework**: NestJS
+- **Language**: TypeScript
+- **Package Manager**: npm
+- **Blockchain**: Solana (Helius RPC)
+- **Database**: PostgreSQL with Drizzle ORM
+- **Cache**: Redis
+- **Storage**: Cloudflare R2
+- **Authentication**: JWT with Solana wallet signature
+- **Documentation**: Swagger/OpenAPI
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Features
 
-## Project setup
+- ✅ Wallet-based authentication (sign message with Solana wallet)
+- ✅ Complete event management (create, update, list, analytics)
+- ✅ Registration system with on-chain verification
+- ✅ Organization management
+- ✅ Badge system for users
+- ✅ File upload to Cloudflare R2 (avatars, event images)
+- ✅ Caching with Redis
+- ✅ Multi-token support (SOL, SPL Token, Token-2022)
+- ✅ Comprehensive error handling
+- ✅ Rate limiting
+- ✅ Swagger API documentation
 
-```bash
-$ npm install
-```
+## Prerequisites
 
-## Compile and run the project
+- Node.js >= 20
+- PostgreSQL >= 15
+- Redis >= 7
+- Cloudflare R2 account
+- Helius API key
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
+## Installation
 
 ```bash
-# unit tests
-$ npm run test
+# Install dependencies
+npm install
 
-# e2e tests
-$ npm run test:e2e
+# Copy environment variables
+cp .env.example .env
 
-# test coverage
-$ npm run test:cov
+# Edit .env with your configuration
+nano .env
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Database Setup
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Generate migration files
+npm run db:generate
+
+# Run migrations
+npm run db:migrate
+
+# Open Drizzle Studio (optional)
+npm run db:studio
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Development
 
-## Resources
+```bash
+# Start in development mode
+npm run start:dev
 
-Check out a few resources that may come in handy when working with NestJS:
+# Start in debug mode
+npm run start:debug
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Production
 
-## Support
+```bash
+# Build application
+npm run build
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+# Start production server
+npm start:prod
+```
 
-## Stay in touch
+## Docker Deployment
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+# Build Docker image
+docker build -t tizzle-backend .
+
+# Run container
+docker run -p 3000:3000 --env-file .env tizzle-backend
+```
+
+## API Documentation
+
+Once the server is running, visit:
+
+- Swagger UI: `http://localhost:3000/docs`
+- API Base URL: `http://localhost:3000/api/v1`
+
+## Environment Variables
+
+### Application
+
+- `NODE_ENV`: Environment (development/production)
+- `PORT`: Server port (default: 3000)
+- `API_PREFIX`: API prefix (default: api/v1)
+
+### Solana
+
+- `SOLANA_NETWORK`: Network (devnet/mainnet-beta)
+- `SOLANA_RPC_URL`: Helius RPC URL
+- `SOLANA_WS_URL`: Helius WebSocket URL
+- `PROGRAM_ID`: Tizzle program ID
+
+### Database
+
+- `DATABASE_URL`: PostgreSQL connection string
+
+### Redis
+
+- `REDIS_HOST`: Redis host
+- `REDIS_PORT`: Redis port
+- `REDIS_PASSWORD`: Redis password (optional)
+
+### JWT
+
+- `JWT_SECRET`: Secret key for JWT
+- `JWT_EXPIRES_IN`: Token expiration (default: 7d)
+
+### Cloudflare R2
+
+- `R2_ACCOUNT_ID`: Cloudflare account ID
+- `R2_ACCESS_KEY_ID`: R2 access key
+- `R2_SECRET_ACCESS_KEY`: R2 secret key
+- `R2_BUCKET_NAME`: Bucket name
+- `R2_PUBLIC_URL`: Public URL for bucket
+
+## API Endpoints
+
+### Authentication
+
+- `POST /api/v1/auth/nonce` - Generate nonce for wallet
+- `POST /api/v1/auth/verify` - Verify signature and login
+- `GET /api/v1/auth/me` - Get current user
+- `POST /api/v1/auth/refresh` - Refresh token
+
+### Users
+
+- `GET /api/v1/users/profile` - Get user profile
+- `PATCH /api/v1/users/profile` - Update profile
+- `POST /api/v1/users/avatar` - Upload avatar
+
+### Organizations
+
+- `POST /api/v1/organizations` - Create organization
+- `GET /api/v1/organizations` - List organizations
+- `GET /api/v1/organizations/:id` - Get organization
+- `PATCH /api/v1/organizations/:id` - Update organization
+- `POST /api/v1/organizations/:id/avatar` - Upload avatar
+
+### Events
+
+- `POST /api/v1/events` - Create event
+- `GET /api/v1/events` - List events
+- `GET /api/v1/events/:id` - Get event details
+- `PATCH /api/v1/events/:id` - Update event
+- `POST /api/v1/events/:id/image` - Upload event image
+- `GET /api/v1/events/:id/registrations` - Get registrations
+- `GET /api/v1/events/:id/analytics` - Get analytics
+
+### Registrations
+
+- `POST /api/v1/registrations` - Register for event
+- `GET /api/v1/registrations/:id` - Get registration
+- `POST /api/v1/registrations/:id/checkin` - Check-in attendee
+
+### Badges
+
+- `GET /api/v1/badges` - List all badges
+- `GET /api/v1/badges/user` - Get user badges
+- `GET /api/v1/badges/:id` - Get badge details
+
+### Analytics
+
+- `GET /api/v1/analytics/protocol` - Protocol metrics
+- `GET /api/v1/analytics/tvl` - Total value locked
+
+## Authentication Flow
+
+1. **Request Nonce**
+
+   ```bash
+   POST /api/v1/auth/nonce
+   {
+     "walletAddress": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
+   }
+   ```
+
+2. **Sign Message** (Frontend)
+   - Use wallet adapter to sign the returned message
+
+3. **Verify Signature**
+
+   ```bash
+   POST /api/v1/auth/verify
+   {
+     "walletAddress": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+     "signature": "base58_encoded_signature",
+     "message": "original_message"
+   }
+   ```
+
+4. **Use Access Token**
+   - Include in Authorization header: `Bearer <token>`
+
+## Project Structure
+
+```
+src/
+├── common/              # Shared utilities
+│   ├── decorators/      # Custom decorators
+│   ├── filters/         # Exception filters
+│   ├── guards/          # Auth guards
+│   └── interceptors/    # Response interceptors
+├── config/              # Configuration
+├── database/            # Database setup
+│   ├── migrations/      # Migration files
+│   └── schema/          # Database schemas
+├── modules/             # Feature modules
+│   ├── auth/            # Authentication
+│   ├── cache/           # Redis cache
+│   ├── solana/          # Solana integration
+│   └── storage/         # R2 storage
+├── app.module.ts        # Root module
+└── main.ts              # Application entry
+```
+
+## Testing
+
+```bash
+# Unit tests
+npm run test
+
+# E2E tests
+npm run test:e2e
+
+# Test coverage
+npm run test:cov
+```
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+MIT
+
+## Support
+
+For issues and questions, please open an issue on GitHub.
