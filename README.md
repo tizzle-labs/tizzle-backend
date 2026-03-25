@@ -106,6 +106,7 @@ Once the server is running, visit:
 - `NODE_ENV`: Environment (development/production)
 - `PORT`: Server port (default: 3000)
 - `API_PREFIX`: API prefix (default: v1)
+- `APP_URL`: Application URL (e.g., https://dev-api.tizzle.app) - **Required for Swagger in production**
 
 ### Solana
 

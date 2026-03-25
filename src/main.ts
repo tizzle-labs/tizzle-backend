@@ -13,16 +13,25 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = configService.get<number>('app.port');
   const apiPrefix = configService.get<string>('app.apiPrefix');
+  const appUrl = configService.get<string>('app.url');
+  const nodeEnv = configService.get<string>('app.nodeEnv');
 
   // Global prefix (exclude health check endpoints)
   app.setGlobalPrefix(apiPrefix, {
     exclude: ['health', '/'],
   });
 
-  // CORS
+  // CORS - more permissive for production
+  const corsOrigins =
+    nodeEnv === 'production'
+      ? [appUrl, /\.dokploy\./, /\.vercel\.app$/, /\.netlify\.app$/]
+      : true;
+
   app.enableCors({
-    origin: true,
+    origin: corsOrigins,
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   });
 
   // Global pipes
@@ -44,10 +53,11 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformInterceptor());
 
   // Swagger documentation
-  const config = new DocumentBuilder()
+  const swaggerConfig = new DocumentBuilder()
     .setTitle('Tizzle API')
     .setDescription('Refundable Staking Ticketing Protocol on Solana')
     .setVersion('1.0')
+    .addServer(appUrl, nodeEnv === 'production' ? 'Production' : 'Development')
     .addBearerAuth()
     .addTag('Authentication', 'Wallet authentication endpoints')
     .addTag('Users', 'User profile management')
@@ -58,8 +68,16 @@ async function bootstrap() {
     .addTag('Analytics', 'Analytics and metrics')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+
+  // Setup Swagger with custom options for production
+  SwaggerModule.setup('docs', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+      tryItOutEnabled: true,
+    },
+    customSiteTitle: 'Tizzle API Documentation',
+  });
 
   await app.listen(port);
 
