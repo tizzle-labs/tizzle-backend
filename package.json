@@ -18,8 +18,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "db:generate": "drizzle-kit generate",
+    "db:generate": "drizzle-kit generate && tsx scripts/generate-rollback.ts",
     "db:migrate": "tsx src/database/migrate.ts",
+    "db:rollback": "tsx src/database/rollback.ts",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {

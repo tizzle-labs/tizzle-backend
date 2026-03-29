@@ -52,11 +52,14 @@ nano .env
 ## Database Setup
 
 ```bash
-# Generate migration files
+# Generate migration files (auto-creates rollback)
 npm run db:generate
 
 # Run migrations
 npm run db:migrate
+
+# Rollback migration (if needed)
+npm run db:rollback <migration-name>
 
 # Open Drizzle Studio (optional)
 npm run db:studio
@@ -106,6 +109,7 @@ Once the server is running, visit:
 - `NODE_ENV`: Environment (development/production)
 - `PORT`: Server port (default: 3000)
 - `API_PREFIX`: API prefix (default: v1)
+- `APP_URL`: Application URL (e.g., https://dev-api.tizzle.app) - **Required for Swagger in production**
 
 ### Solana
 
