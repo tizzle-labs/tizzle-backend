@@ -257,4 +257,146 @@ export class SolanaService implements OnModuleInit {
       return false;
     }
   }
+
+  // Verify organization PDA exists on-chain and matches expected owner
+  async verifyOrganizationPda(
+    organizationPda: string,
+    expectedOwner: string,
+  ): Promise<{ valid: boolean; data?: any; error?: string }> {
+    try {
+      const orgPubkey = new PublicKey(organizationPda);
+      const ownerPubkey = new PublicKey(expectedOwner);
+
+      // Fetch organization account from on-chain
+      const orgAccount = await this.fetchOrganization(orgPubkey);
+
+      if (!orgAccount) {
+        return {
+          valid: false,
+          error: 'Organization PDA does not exist on-chain',
+        };
+      }
+
+      // Verify the owner matches
+      if (!orgAccount.owner.equals(ownerPubkey)) {
+        return {
+          valid: false,
+          error: 'Organization owner does not match the expected owner',
+        };
+      }
+
+      return { valid: true, data: orgAccount };
+    } catch (error: any) {
+      this.logger.error(`Failed to verify organization PDA: ${error.message}`);
+      return { valid: false, error: error.message };
+    }
+  }
+
+  // Verify event PDA exists on-chain and matches expected organization
+  async verifyEventPda(
+    eventPda: string,
+    expectedOrganizationPda: string,
+  ): Promise<{ valid: boolean; data?: any; error?: string }> {
+    try {
+      const eventPubkey = new PublicKey(eventPda);
+      const orgPubkey = new PublicKey(expectedOrganizationPda);
+
+      // Fetch event account from on-chain
+      const eventAccount = await this.fetchEvent(eventPubkey);
+
+      if (!eventAccount) {
+        return { valid: false, error: 'Event PDA does not exist on-chain' };
+      }
+
+      // Verify the organization matches
+      if (!eventAccount.organization.equals(orgPubkey)) {
+        return {
+          valid: false,
+          error: 'Event organization does not match the expected organization',
+        };
+      }
+
+      return { valid: true, data: eventAccount };
+    } catch (error: any) {
+      this.logger.error(`Failed to verify event PDA: ${error.message}`);
+      return { valid: false, error: error.message };
+    }
+  }
+
+  // Verify registration PDA exists on-chain and matches expected event and attendee
+  async verifyRegistrationPda(
+    registrationPda: string,
+    expectedEventPda: string,
+    expectedAttendee: string,
+  ): Promise<{ valid: boolean; data?: any; error?: string }> {
+    try {
+      const regPubkey = new PublicKey(registrationPda);
+      const eventPubkey = new PublicKey(expectedEventPda);
+      const attendeePubkey = new PublicKey(expectedAttendee);
+
+      // Fetch registration account from on-chain
+      const regAccount = await this.fetchRegistration(regPubkey);
+
+      if (!regAccount) {
+        return {
+          valid: false,
+          error: 'Registration PDA does not exist on-chain',
+        };
+      }
+
+      // Verify the event matches
+      if (!regAccount.event.equals(eventPubkey)) {
+        return {
+          valid: false,
+          error: 'Registration event does not match the expected event',
+        };
+      }
+
+      // Verify the attendee matches
+      if (!regAccount.attendee.equals(attendeePubkey)) {
+        return {
+          valid: false,
+          error: 'Registration attendee does not match the expected attendee',
+        };
+      }
+
+      return { valid: true, data: regAccount };
+    } catch (error: any) {
+      this.logger.error(`Failed to verify registration PDA: ${error.message}`);
+      return { valid: false, error: error.message };
+    }
+  }
+
+  // Verify check-in status on-chain
+  async verifyCheckInStatus(
+    eventPda: string,
+    attendeeWallet: string,
+  ): Promise<{ valid: boolean; checkedIn: boolean; error?: string }> {
+    try {
+      const eventPubkey = new PublicKey(eventPda);
+      const attendeePubkey = new PublicKey(attendeeWallet);
+
+      // Derive registration PDA
+      const [regPda] = this.getRegistrationPda(eventPubkey, attendeePubkey);
+
+      // Fetch registration account from on-chain
+      const regAccount = await this.fetchRegistration(regPda);
+
+      if (!regAccount) {
+        return {
+          valid: false,
+          checkedIn: false,
+          error: 'Registration does not exist on-chain',
+        };
+      }
+
+      return {
+        valid: true,
+        checkedIn: regAccount.checkedIn,
+      };
+    } catch (error: any) {
+      this.logger.error(`Failed to verify check-in status: ${error.message}`);
+      return { valid: false, checkedIn: false, error: error.message };
+    }
+  }
 }

@@ -49,9 +49,14 @@ export class RegistrationsController {
   @Put(':registrationPda')
   @ApiOperation({ summary: 'Update registration' })
   async update(
+    @CurrentUser() user: any,
     @Param('registrationPda') registrationPda: string,
     @Body() dto: UpdateRegistrationDto,
   ) {
-    return this.registrationsService.update(registrationPda, dto);
+    return this.registrationsService.update(
+      registrationPda,
+      user.walletAddress,
+      dto,
+    );
   }
 }
