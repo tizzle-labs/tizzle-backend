@@ -5,7 +5,6 @@ export enum ImageType {
   USER_AVATAR = 'user_avatar',
   ORGANIZATION_AVATAR = 'organization_avatar',
   EVENT_IMAGE = 'event_image',
-  BADGE_IMAGE = 'badge_image',
 }
 
 export class UploadImageDto {
