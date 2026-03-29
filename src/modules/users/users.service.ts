@@ -43,9 +43,22 @@ export class UsersService {
   }
 
   async update(walletAddress: string, updateDto: UpdateUserDto) {
+    // Only allow updating profile fields, not wallet address or other credentials
+    const allowedUpdates: any = {};
+
+    if (updateDto.username !== undefined)
+      allowedUpdates.username = updateDto.username;
+    if (updateDto.email !== undefined) allowedUpdates.email = updateDto.email;
+    if (updateDto.name !== undefined) allowedUpdates.name = updateDto.name;
+    if (updateDto.bio !== undefined) allowedUpdates.bio = updateDto.bio;
+    if (updateDto.avatarUrl !== undefined)
+      allowedUpdates.avatarUrl = updateDto.avatarUrl;
+
+    allowedUpdates.updatedAt = new Date();
+
     const [updated] = await this.db
       .update(users)
-      .set(updateDto as any)
+      .set(allowedUpdates)
       .where(eq(users.walletAddress, walletAddress))
       .returning();
 

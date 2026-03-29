@@ -34,9 +34,10 @@ export class EventsController {
   @Put(':eventPda')
   @ApiOperation({ summary: 'Update event' })
   async update(
+    @CurrentUser() user: any,
     @Param('eventPda') eventPda: string,
     @Body() dto: UpdateEventDto,
   ) {
-    return this.eventsService.update(eventPda, dto);
+    return this.eventsService.update(eventPda, user.walletAddress, dto);
   }
 }

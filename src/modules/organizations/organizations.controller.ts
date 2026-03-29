@@ -40,9 +40,14 @@ export class OrganizationsController {
   @Put(':organizationPda')
   @ApiOperation({ summary: 'Update organization' })
   async update(
+    @CurrentUser() user: any,
     @Param('organizationPda') organizationPda: string,
     @Body() dto: UpdateOrganizationDto,
   ) {
-    return this.organizationsService.update(organizationPda, dto);
+    return this.organizationsService.update(
+      organizationPda,
+      user.walletAddress,
+      dto,
+    );
   }
 }
