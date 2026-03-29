@@ -52,11 +52,14 @@ nano .env
 ## Database Setup
 
 ```bash
-# Generate migration files
+# Generate migration files (auto-creates rollback)
 npm run db:generate
 
 # Run migrations
 npm run db:migrate
+
+# Rollback migration (if needed)
+npm run db:rollback <migration-name>
 
 # Open Drizzle Studio (optional)
 npm run db:studio

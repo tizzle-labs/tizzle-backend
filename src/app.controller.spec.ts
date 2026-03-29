@@ -5,7 +5,6 @@ import { ConfigService } from '@nestjs/config';
 
 describe('AppController', () => {
   let appController: AppController;
-  let appService: AppService;
 
   const mockConfigService = {
     get: jest.fn((key: string) => {
@@ -30,7 +29,6 @@ describe('AppController', () => {
     }).compile();
 
     appController = app.get<AppController>(AppController);
-    appService = app.get<AppService>(AppService);
   });
 
   describe('getHealth', () => {
