@@ -20,7 +20,7 @@ export class AppController {
   @Get('readiness')
   @ApiOperation({ summary: 'Readiness check endpoint' })
   @ApiResponse({ status: 200, description: 'Service is ready' })
-  getReadiness() {
+  async getReadiness() {
     return this._appService.getReadiness();
   }
 
