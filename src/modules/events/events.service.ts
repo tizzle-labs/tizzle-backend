@@ -11,6 +11,7 @@ import { DATABASE_CONNECTION } from '../../database/database.module';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import * as schema from '../../database/schema';
 import { events } from '../../database/schema/events.schema';
+import { organizations } from '../../database/schema/organizations.schema';
 import { CreateEventDto, UpdateEventDto } from './dto/event.dto';
 import { SolanaService } from '../solana/solana.service';
 
@@ -74,14 +75,66 @@ export class EventsService {
     return event;
   }
 
+  private get eventWithOrgFields() {
+    return {
+      id: events.id,
+      eventPda: events.eventPda,
+      eventId: events.eventId,
+      organizationPda: events.organizationPda,
+      organizerWalletAddress: events.organizerWalletAddress,
+      gatekeeperAddress: events.gatekeeperAddress,
+      title: events.title,
+      description: events.description,
+      imageUrl: events.imageUrl,
+      location: events.location,
+      category: events.category,
+      tags: events.tags,
+      capacity: events.capacity,
+      stakeAmount: events.stakeAmount,
+      stakeTokenMint: events.stakeTokenMint,
+      stakeTokenSymbol: events.stakeTokenSymbol,
+      stakeTokenDecimals: events.stakeTokenDecimals,
+      hostFeeEnabled: events.hostFeeEnabled,
+      hostFeePercent: events.hostFeePercent,
+      platformFeePaid: events.platformFeePaid,
+      startTime: events.startTime,
+      endTime: events.endTime,
+      unlockTime: events.unlockTime,
+      totalRegistered: events.totalRegistered,
+      totalCheckedIn: events.totalCheckedIn,
+      totalStaked: events.totalStaked,
+      totalRefunded: events.totalRefunded,
+      organizerWithdrawn: events.organizerWithdrawn,
+      isPublished: events.isPublished,
+      isFeatured: events.isFeatured,
+      createdAt: events.createdAt,
+      updatedAt: events.updatedAt,
+      organizationName: organizations.name,
+      organizationAvatarUrl: organizations.avatarUrl,
+    };
+  }
+
   async findAll() {
-    return this.db.select().from(events).orderBy(desc(events.createdAt));
+    const rows = await this.db
+      .select(this.eventWithOrgFields)
+      .from(events)
+      .leftJoin(
+        organizations,
+        eq(events.organizationPda, organizations.organizationPda),
+      )
+      .orderBy(desc(events.createdAt));
+
+    return rows;
   }
 
   async findByPda(eventPda: string) {
     const [event] = await this.db
-      .select()
+      .select(this.eventWithOrgFields)
       .from(events)
+      .leftJoin(
+        organizations,
+        eq(events.organizationPda, organizations.organizationPda),
+      )
       .where(eq(events.eventPda, eventPda))
       .limit(1);
 
@@ -94,8 +147,12 @@ export class EventsService {
 
   async findByOrganization(organizationPda: string) {
     return this.db
-      .select()
+      .select(this.eventWithOrgFields)
       .from(events)
+      .leftJoin(
+        organizations,
+        eq(events.organizationPda, organizations.organizationPda),
+      )
       .where(eq(events.organizationPda, organizationPda))
       .orderBy(desc(events.createdAt));
   }
