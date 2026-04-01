@@ -49,6 +49,11 @@ export class CreateEventDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  venueImageUrl?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
   location?: string;
 
   @ApiPropertyOptional()
@@ -126,6 +131,11 @@ export class UpdateEventDto {
   @IsOptional()
   @IsString()
   imageUrl?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  venueImageUrl?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

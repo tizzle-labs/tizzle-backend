@@ -86,6 +86,7 @@ export class EventsService {
       title: events.title,
       description: events.description,
       imageUrl: events.imageUrl,
+      venueImageUrl: events.venueImageUrl,
       location: events.location,
       category: events.category,
       tags: events.tags,
@@ -186,6 +187,8 @@ export class EventsService {
     if (dto.description !== undefined)
       allowedUpdates.description = dto.description;
     if (dto.imageUrl !== undefined) allowedUpdates.imageUrl = dto.imageUrl;
+    if (dto.venueImageUrl !== undefined)
+      allowedUpdates.venueImageUrl = dto.venueImageUrl;
     if (dto.location !== undefined) allowedUpdates.location = dto.location;
     if (dto.isPublished !== undefined)
       allowedUpdates.isPublished = dto.isPublished;
