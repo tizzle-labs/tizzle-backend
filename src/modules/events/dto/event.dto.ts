@@ -151,4 +151,9 @@ export class UpdateEventDto {
   @IsOptional()
   @IsBoolean()
   isFeatured?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  organizerWithdrawn?: boolean;
 }

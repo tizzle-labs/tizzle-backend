@@ -5,7 +5,7 @@ import {
   ConflictException,
   ForbiddenException,
 } from '@nestjs/common';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, sql } from 'drizzle-orm';
 import { Inject } from '@nestjs/common';
 import { DATABASE_CONNECTION } from '../../database/database.module';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
@@ -71,6 +71,11 @@ export class EventsService {
         unlockTime: new Date(dto.unlockTime),
       })
       .returning();
+
+    // Step 5: Increment organization totalEvents
+    await this.db.execute(
+      sql`UPDATE organizations SET total_events = total_events + 1, updated_at = NOW() WHERE organization_pda = ${dto.organizationPda}`,
+    );
 
     return event;
   }
@@ -194,6 +199,8 @@ export class EventsService {
       allowedUpdates.isPublished = dto.isPublished;
     if (dto.isFeatured !== undefined)
       allowedUpdates.isFeatured = dto.isFeatured;
+    if (dto.organizerWithdrawn !== undefined)
+      allowedUpdates.organizerWithdrawn = dto.organizerWithdrawn;
 
     const [updated] = await this.db
       .update(events)
