@@ -120,7 +120,18 @@ export class EventsService {
     };
   }
 
-  async findAll() {
+  async findAll(options?: {
+    limit?: number;
+    offset?: number;
+    sortBy?: 'created_at' | 'start_time';
+  }) {
+    const limit = Math.min(options?.limit ?? 20, 100);
+    const offset = options?.offset ?? 0;
+    const order =
+      options?.sortBy === 'start_time'
+        ? desc(events.startTime)
+        : desc(events.createdAt);
+
     const rows = await this.db
       .select(this.eventWithOrgFields)
       .from(events)
@@ -128,7 +139,9 @@ export class EventsService {
         organizations,
         eq(events.organizationPda, organizations.organizationPda),
       )
-      .orderBy(desc(events.createdAt));
+      .orderBy(order)
+      .limit(limit)
+      .offset(offset);
 
     return rows;
   }

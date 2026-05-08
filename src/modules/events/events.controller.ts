@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Put, Body, Param, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { EventsService } from './events.service';
 import { CreateEventDto, UpdateEventDto } from './dto/event.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -18,11 +18,20 @@ export class EventsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all events' })
-  async findAll(@Query('organizationPda') organizationPda?: string) {
+  @ApiQuery({ name: 'organizationPda', required: false })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'offset', required: false, type: Number })
+  @ApiQuery({ name: 'sortBy', required: false, enum: ['created_at', 'start_time'] })
+  async findAll(
+    @Query('organizationPda') organizationPda?: string,
+    @Query('limit') limit?: number,
+    @Query('offset') offset?: number,
+    @Query('sortBy') sortBy?: 'created_at' | 'start_time',
+  ) {
     if (organizationPda) {
       return this.eventsService.findByOrganization(organizationPda);
     }
-    return this.eventsService.findAll();
+    return this.eventsService.findAll({ limit, offset, sortBy });
   }
 
   @Get(':eventPda')
