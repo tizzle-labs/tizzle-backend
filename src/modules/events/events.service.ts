@@ -124,30 +124,35 @@ export class EventsService {
     };
   }
 
+  // Upcoming events first (soonest at top), then settlement events (most recent at top)
+  private get startTimeOrder() {
+    return [
+      sql`CASE WHEN ${events.startTime} >= NOW() THEN 0 ELSE 1 END`,
+      sql`CASE WHEN ${events.startTime} >= NOW() THEN EXTRACT(EPOCH FROM ${events.startTime}) ELSE -EXTRACT(EPOCH FROM ${events.startTime}) END`,
+    ] as const;
+  }
+
   async findAll(options?: {
     limit?: number;
     offset?: number;
     sortBy?: 'created_at' | 'start_time';
+    category?: string;
   }) {
     const limit = Math.min(options?.limit ?? 20, 100);
     const offset = options?.offset ?? 0;
-    const order =
-      options?.sortBy === 'start_time'
-        ? desc(events.startTime)
-        : desc(events.createdAt);
+    const byStartTime = options?.sortBy === 'start_time';
+    const whereClause = options?.category
+      ? sql`LOWER(${events.category}) = LOWER(${options.category})`
+      : undefined;
 
-    const rows = await this.db
+    return this.db
       .select(this.eventWithOrgFields)
       .from(events)
-      .leftJoin(
-        organizations,
-        eq(events.organizationPda, organizations.organizationPda),
-      )
-      .orderBy(order)
+      .leftJoin(organizations, eq(events.organizationPda, organizations.organizationPda))
+      .where(whereClause)
+      .orderBy(...(byStartTime ? this.startTimeOrder : [desc(events.createdAt)]))
       .limit(limit)
       .offset(offset);
-
-    return rows;
   }
 
   async findForUser(walletAddress: string, options?: { limit?: number; offset?: number }) {
@@ -170,7 +175,7 @@ export class EventsService {
       .from(events)
       .leftJoin(organizations, eq(events.organizationPda, organizations.organizationPda))
       .where(whereClause)
-      .orderBy(desc(events.createdAt))
+      .orderBy(...this.startTimeOrder)
       .limit(limit)
       .offset(offset);
   }

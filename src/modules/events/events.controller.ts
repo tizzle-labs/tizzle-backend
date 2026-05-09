@@ -22,16 +22,18 @@ export class EventsController {
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'offset', required: false, type: Number })
   @ApiQuery({ name: 'sortBy', required: false, enum: ['created_at', 'start_time'] })
+  @ApiQuery({ name: 'category', required: false })
   async findAll(
     @Query('organizationPda') organizationPda?: string,
     @Query('limit') limit?: number,
     @Query('offset') offset?: number,
     @Query('sortBy') sortBy?: 'created_at' | 'start_time',
+    @Query('category') category?: string,
   ) {
     if (organizationPda) {
       return this.eventsService.findByOrganization(organizationPda);
     }
-    return this.eventsService.findAll({ limit, offset, sortBy });
+    return this.eventsService.findAll({ limit, offset, sortBy, category });
   }
 
   @Get('for-you')
