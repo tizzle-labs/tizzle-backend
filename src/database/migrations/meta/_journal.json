@@ -22,6 +22,13 @@
       "when": 1778317348542,
       "tag": "0002_lumpy_roulette",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1778319134218,
+      "tag": "0003_milky_junta",
+      "breakpoints": true
     }
   ]
 }

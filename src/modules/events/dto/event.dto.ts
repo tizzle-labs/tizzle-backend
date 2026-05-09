@@ -60,6 +60,11 @@ export class CreateEventDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsString()
+  locationDetail?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNumber()
   latitude?: number;
 

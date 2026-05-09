@@ -29,6 +29,7 @@ export const events = pgTable('events', {
   imageUrl: varchar('image_url', { length: 500 }),
   venueImageUrl: varchar('venue_image_url', { length: 500 }),
   location: varchar('location', { length: 255 }),
+  locationDetail: varchar('location_detail', { length: 500 }),
   latitude: doublePrecision('latitude'),
   longitude: doublePrecision('longitude'),
   category: varchar('category', { length: 100 }),
