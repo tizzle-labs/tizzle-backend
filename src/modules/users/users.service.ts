@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { eq, and, ne } from 'drizzle-orm';
 import { Inject } from '@nestjs/common';
 import { DATABASE_CONNECTION } from '../../database/database.module';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
@@ -40,6 +40,19 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async isUsernameAvailable(username: string, excludeWalletAddress?: string): Promise<boolean> {
+    const conditions = [eq(users.username, username)];
+    if (excludeWalletAddress) {
+      conditions.push(ne(users.walletAddress, excludeWalletAddress));
+    }
+    const [existing] = await this.db
+      .select({ id: users.id })
+      .from(users)
+      .where(and(...conditions))
+      .limit(1);
+    return !existing;
   }
 
   async update(walletAddress: string, updateDto: UpdateUserDto) {

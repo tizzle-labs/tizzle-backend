@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsUrl,
   MaxLength,
+  MinLength,
   Matches,
   IsEmail,
 } from 'class-validator';
@@ -12,6 +13,7 @@ export class UpdateUserDto {
   @ApiPropertyOptional({ example: 'johndoe' })
   @IsOptional()
   @IsString()
+  @MinLength(3, { message: 'Username must be at least 3 characters' })
   @MaxLength(50)
   @Matches(/^[a-zA-Z0-9_-]+$/, {
     message:
