@@ -5,13 +5,14 @@ import {
   ConflictException,
   ForbiddenException,
 } from '@nestjs/common';
-import { eq, desc, sql } from 'drizzle-orm';
+import { eq, desc, sql, or } from 'drizzle-orm';
 import { Inject } from '@nestjs/common';
 import { DATABASE_CONNECTION } from '../../database/database.module';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import * as schema from '../../database/schema';
 import { events } from '../../database/schema/events.schema';
 import { organizations } from '../../database/schema/organizations.schema';
+import { users } from '../../database/schema/users.schema';
 import { CreateEventDto, UpdateEventDto } from './dto/event.dto';
 import { SolanaService } from '../solana/solana.service';
 
@@ -147,6 +148,31 @@ export class EventsService {
       .offset(offset);
 
     return rows;
+  }
+
+  async findForUser(walletAddress: string, options?: { limit?: number; offset?: number }) {
+    const [user] = await this.db
+      .select({ interests: users.interests })
+      .from(users)
+      .where(eq(users.walletAddress, walletAddress))
+      .limit(1);
+
+    const interests = (user?.interests as string[] | null) ?? [];
+    const limit = Math.min(options?.limit ?? 20, 100);
+    const offset = options?.offset ?? 0;
+    const whereClause =
+      interests.length > 0
+        ? or(...interests.map((i) => sql`LOWER(${events.category}) = LOWER(${i})`))
+        : undefined;
+
+    return this.db
+      .select(this.eventWithOrgFields)
+      .from(events)
+      .leftJoin(organizations, eq(events.organizationPda, organizations.organizationPda))
+      .where(whereClause)
+      .orderBy(desc(events.createdAt))
+      .limit(limit)
+      .offset(offset);
   }
 
   async findByPda(eventPda: string) {

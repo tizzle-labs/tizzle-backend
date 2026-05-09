@@ -34,6 +34,18 @@ export class EventsController {
     return this.eventsService.findAll({ limit, offset, sortBy });
   }
 
+  @Get('for-you')
+  @ApiOperation({ summary: 'Get events matching the current user interests' })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'offset', required: false, type: Number })
+  async findForUser(
+    @CurrentUser() user: any,
+    @Query('limit') limit?: number,
+    @Query('offset') offset?: number,
+  ) {
+    return this.eventsService.findForUser(user.walletAddress, { limit, offset });
+  }
+
   @Get(':eventPda')
   @ApiOperation({ summary: 'Get event by PDA' })
   async findOne(@Param('eventPda') eventPda: string) {
