@@ -6,9 +6,11 @@ import {
   IsBoolean,
   IsDateString,
   IsNotEmpty,
+  IsIn,
   Min,
   Max,
 } from 'class-validator';
+import { EVENT_CATEGORIES } from '../../../common/constants/event-categories';
 
 export class CreateEventDto {
   @ApiProperty()
@@ -58,7 +60,17 @@ export class CreateEventDto {
 
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
+  @IsNumber()
+  latitude?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  longitude?: number;
+
+  @ApiPropertyOptional({ enum: EVENT_CATEGORIES })
+  @IsOptional()
+  @IsIn([...EVENT_CATEGORIES])
   category?: string;
 
   @ApiProperty()

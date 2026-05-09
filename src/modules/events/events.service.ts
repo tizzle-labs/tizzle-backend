@@ -93,6 +93,8 @@ export class EventsService {
       imageUrl: events.imageUrl,
       venueImageUrl: events.venueImageUrl,
       location: events.location,
+      latitude: events.latitude,
+      longitude: events.longitude,
       category: events.category,
       tags: events.tags,
       capacity: events.capacity,
