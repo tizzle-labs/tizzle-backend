@@ -5,6 +5,7 @@ import {
   timestamp,
   text,
   boolean,
+  json,
 } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
@@ -16,6 +17,7 @@ export const users = pgTable('users', {
   bio: text('bio'),
   avatarUrl: varchar('avatar_url', { length: 500 }),
   nonce: varchar('nonce', { length: 64 }).notNull(),
+  interests: json('interests').$type<string[]>().default([]),
   isVerified: boolean('is_verified').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at')

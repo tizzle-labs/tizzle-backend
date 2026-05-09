@@ -7,6 +7,7 @@ import {
   MinLength,
   Matches,
   IsEmail,
+  IsArray,
 } from 'class-validator';
 
 export class UpdateUserDto {
@@ -41,6 +42,11 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   bio?: string;
+
+  @ApiPropertyOptional({ example: ['Tech & AI', 'Music'] })
+  @IsOptional()
+  @IsArray()
+  interests?: string[];
 }
 
 export class UserResponseDto {
@@ -64,6 +70,9 @@ export class UserResponseDto {
 
   @ApiPropertyOptional()
   bio?: string;
+
+  @ApiPropertyOptional()
+  interests?: string[];
 
   @ApiProperty()
   isVerified: boolean;

@@ -66,6 +66,8 @@ export class UsersService {
     if (updateDto.bio !== undefined) allowedUpdates.bio = updateDto.bio;
     if (updateDto.avatarUrl !== undefined)
       allowedUpdates.avatarUrl = updateDto.avatarUrl;
+    if (updateDto.interests !== undefined)
+      allowedUpdates.interests = updateDto.interests;
 
     allowedUpdates.updatedAt = new Date();
 
