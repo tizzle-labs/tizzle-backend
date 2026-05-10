@@ -9,6 +9,7 @@ export const EVENT_CATEGORIES = [
   'Sports',
   'Business & Professional',
   'Education',
+  'Others',
 ] as const
 
 export type EventCategory = (typeof EVENT_CATEGORIES)[number]

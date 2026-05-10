@@ -142,7 +142,9 @@ export class EventsService {
     const offset = options?.offset ?? 0;
     const byStartTime = options?.sortBy === 'start_time';
     const whereClause = options?.category
-      ? sql`LOWER(${events.category}) = LOWER(${options.category})`
+      ? options.category.toLowerCase() === 'others'
+        ? sql`${events.category} IS NULL`
+        : sql`LOWER(${events.category}) = LOWER(${options.category})`
       : undefined;
 
     return this.db
