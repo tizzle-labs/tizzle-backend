@@ -13,6 +13,7 @@ export enum StorageFolder {
   USER_AVATARS = 'avatars/users',
   ORGANIZATION_AVATARS = 'avatars/organizations',
   EVENT_IMAGES = 'images/events',
+  EVENT_VENUE_IMAGES = 'images/events/venues',
 }
 
 @Injectable()

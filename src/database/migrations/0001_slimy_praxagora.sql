@@ -1,0 +1,1 @@
+ALTER TABLE "events" ADD COLUMN "venue_image_url" varchar(500);

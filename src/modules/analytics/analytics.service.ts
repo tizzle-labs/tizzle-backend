@@ -5,7 +5,7 @@ import { DATABASE_CONNECTION } from '../../database/database.module';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import * as schema from '../../database/schema';
 import { eventAnalytics } from '../../database/schema/analytics.schema';
-import { CreateAnalyticsDto } from './dto/analytics.dto';
+import { events } from '../../database/schema/events.schema';
 
 @Injectable()
 export class AnalyticsService {
@@ -14,16 +14,33 @@ export class AnalyticsService {
     private db: NodePgDatabase<typeof schema>,
   ) {}
 
-  async create(dto: CreateAnalyticsDto) {
-    const [analytics] = await this.db
-      .insert(eventAnalytics)
-      .values({
-        ...dto,
-        snapshotTime: new Date(dto.snapshotTime),
-      })
-      .returning();
+  /**
+   * Auto-generate analytics snapshot from current event metrics.
+   * Called internally after registration, check-in, or refund events.
+   */
+  async createSnapshotForEvent(eventPda: string) {
+    const [event] = await this.db
+      .select()
+      .from(events)
+      .where(eq(events.eventPda, eventPda))
+      .limit(1);
 
-    return analytics;
+    if (!event) return;
+
+    const attendanceRate =
+      event.totalRegistered > 0
+        ? Math.round((event.totalCheckedIn / event.totalRegistered) * 10000) // stored as percentage * 100
+        : 0;
+
+    await this.db.insert(eventAnalytics).values({
+      eventPda,
+      snapshotTime: new Date(),
+      totalRegistered: event.totalRegistered,
+      totalCheckedIn: event.totalCheckedIn,
+      totalRefunded: event.totalRefunded,
+      tvlAmount: event.totalStaked,
+      attendanceRate,
+    });
   }
 
   async findByEvent(eventPda: string) {

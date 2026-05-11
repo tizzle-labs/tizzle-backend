@@ -1,4 +1,4 @@
-import { Controller, Get, Put, Body, Param } from '@nestjs/common';
+import { Controller, Get, Put, Body, Param, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UpdateUserDto, UserResponseDto } from './dto/user.dto';
@@ -14,6 +14,16 @@ export class UsersController {
   @ApiOperation({ summary: 'Get current user profile' })
   async getProfile(@CurrentUser() user: any): Promise<UserResponseDto> {
     return this.usersService.findByWallet(user.walletAddress);
+  }
+
+  @Get('check-username')
+  @ApiOperation({ summary: 'Check if a username is available' })
+  async checkUsername(
+    @CurrentUser() user: any,
+    @Query('username') username: string,
+  ): Promise<{ available: boolean }> {
+    const available = await this.usersService.isUsernameAvailable(username, user.walletAddress);
+    return { available };
   }
 
   @Put('me')

@@ -110,6 +110,16 @@ export class StorageController {
           return event?.imageUrl || null;
         }
 
+        case ImageType.EVENT_VENUE_IMAGE: {
+          if (!resourceId) return null;
+          const [event] = await this.db
+            .select({ venueImageUrl: events.venueImageUrl })
+            .from(events)
+            .where(eq(events.eventPda, resourceId))
+            .limit(1);
+          return event?.venueImageUrl || null;
+        }
+
         default:
           return null;
       }
@@ -345,6 +355,95 @@ export class StorageController {
     await this.db
       .update(events)
       .set({ imageUrl: url, updatedAt: new Date() } as any)
+      .where(eq(events.eventPda, eventPda));
+
+    return {
+      url,
+      size: file.size,
+      mimeType: file.mimetype,
+      originalName: file.originalname,
+    };
+  }
+
+  @Post('upload/event-venue-image')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Upload event venue image',
+    description:
+      'Upload venue mapping image for an event. Requires eventPda in request body. If event already has a venue image, the old one will be deleted automatically. Only event organizer can upload.',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['file', 'eventPda'],
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Venue image file',
+        },
+        eventPda: {
+          type: 'string',
+          description: 'Event PDA',
+          example: 'XYZ789...',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Event venue image uploaded successfully',
+    type: UploadResponseDto,
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadEventVenueImage(
+    @CurrentUser() user: any,
+    @UploadedFile() file: Express.Multer.File,
+    @Body('eventPda') eventPda: string,
+  ): Promise<UploadResponseDto> {
+    this.validateFile(file);
+
+    if (!eventPda) {
+      throw new BadRequestException('eventPda is required');
+    }
+
+    // Verify user is the event organizer
+    const [event] = await this.db
+      .select()
+      .from(events)
+      .where(eq(events.eventPda, eventPda))
+      .limit(1);
+
+    if (!event) {
+      throw new BadRequestException('Event not found');
+    }
+
+    if (event.organizerWalletAddress !== user.walletAddress) {
+      throw new BadRequestException(
+        'Only event organizer can upload venue image',
+      );
+    }
+
+    // Get old venue image URL
+    const oldVenueImageUrl = await this.getOldFileUrl(
+      ImageType.EVENT_VENUE_IMAGE,
+      user.walletAddress,
+      eventPda,
+    );
+
+    // Upload new file and delete old one
+    const url = await this.storageService.replaceFile(
+      oldVenueImageUrl,
+      file,
+      StorageFolder.EVENT_VENUE_IMAGES,
+    );
+
+    // Update event venue image URL in database
+    await this.db
+      .update(events)
+      .set({ venueImageUrl: url, updatedAt: new Date() } as any)
       .where(eq(events.eventPda, eventPda));
 
     return {

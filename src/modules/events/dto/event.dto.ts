@@ -6,9 +6,11 @@ import {
   IsBoolean,
   IsDateString,
   IsNotEmpty,
+  IsIn,
   Min,
   Max,
 } from 'class-validator';
+import { EVENT_CATEGORIES } from '../../../common/constants/event-categories';
 
 export class CreateEventDto {
   @ApiProperty()
@@ -49,11 +51,31 @@ export class CreateEventDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  venueImageUrl?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
   location?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  locationDetail?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  latitude?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  longitude?: number;
+
+  @ApiPropertyOptional({ enum: EVENT_CATEGORIES })
+  @IsOptional()
+  @IsIn([...EVENT_CATEGORIES])
   category?: string;
 
   @ApiProperty()
@@ -130,6 +152,11 @@ export class UpdateEventDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  venueImageUrl?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
   location?: string;
 
   @ApiPropertyOptional()
@@ -141,4 +168,9 @@ export class UpdateEventDto {
   @IsOptional()
   @IsBoolean()
   isFeatured?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  organizerWithdrawn?: boolean;
 }

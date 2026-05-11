@@ -5,7 +5,7 @@ import {
   ConflictException,
   ForbiddenException,
 } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { Inject } from '@nestjs/common';
 import { DATABASE_CONNECTION } from '../../database/database.module';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
@@ -16,6 +16,7 @@ import {
   UpdateRegistrationDto,
 } from './dto/registration.dto';
 import { SolanaService } from '../solana/solana.service';
+import { AnalyticsService } from '../analytics/analytics.service';
 
 @Injectable()
 export class RegistrationsService {
@@ -23,6 +24,7 @@ export class RegistrationsService {
     @Inject(DATABASE_CONNECTION)
     private db: NodePgDatabase<typeof schema>,
     private solanaService: SolanaService,
+    private analyticsService: AnalyticsService,
   ) {}
 
   async create(attendeeWalletAddress: string, dto: CreateRegistrationDto) {
@@ -69,6 +71,19 @@ export class RegistrationsService {
         registeredAt: new Date(dto.registeredAt),
       })
       .returning();
+
+    // Step 5: Update event metrics (totalRegistered + 1, totalStaked += stakeAmount)
+    await this.db.execute(
+      sql`UPDATE events SET total_registered = total_registered + 1, total_staked = total_staked + ${dto.stakeAmount}, updated_at = NOW() WHERE event_pda = ${dto.eventPda}`,
+    );
+
+    // Step 6: Update organization totalStakedVolume
+    await this.db.execute(
+      sql`UPDATE organizations SET total_staked_volume = total_staked_volume + ${dto.stakeAmount}, updated_at = NOW() WHERE organization_pda = (SELECT organization_pda FROM events WHERE event_pda = ${dto.eventPda} LIMIT 1)`,
+    );
+
+    // Step 7: Auto-generate analytics snapshot
+    await this.analyticsService.createSnapshotForEvent(dto.eventPda);
 
     return registration;
   }
@@ -165,6 +180,30 @@ export class RegistrationsService {
       .set(updateData)
       .where(eq(registrations.registrationPda, registrationPda))
       .returning();
+
+    // Sync event metrics after update
+    const wasCheckedIn = !existing.checkedIn && dto.checkedIn === true;
+    const wasRefunded = !existing.refunded && dto.refunded === true;
+
+    if (wasCheckedIn || wasRefunded) {
+      if (wasCheckedIn) {
+        await this.db.execute(
+          sql`UPDATE events SET total_checked_in = total_checked_in + 1, updated_at = NOW() WHERE event_pda = ${existing.eventPda}`,
+        );
+      }
+
+      if (wasRefunded) {
+        await this.db.execute(
+          sql`UPDATE events SET total_refunded = total_refunded + 1, total_staked = total_staked - ${existing.stakeAmount}, updated_at = NOW() WHERE event_pda = ${existing.eventPda}`,
+        );
+        await this.db.execute(
+          sql`UPDATE organizations SET total_staked_volume = total_staked_volume - ${existing.stakeAmount}, updated_at = NOW() WHERE organization_pda = (SELECT organization_pda FROM events WHERE event_pda = ${existing.eventPda} LIMIT 1)`,
+        );
+      }
+
+      // Auto-generate analytics snapshot
+      await this.analyticsService.createSnapshotForEvent(existing.eventPda);
+    }
 
     return updated;
   }

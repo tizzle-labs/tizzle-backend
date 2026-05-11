@@ -148,4 +148,20 @@ export class CacheService implements OnModuleInit, OnModuleDestroy {
   async getCachedTVL(): Promise<any> {
     return await this.get('protocol:tvl');
   }
+
+  // Health check method
+  async isHealthy(): Promise<boolean> {
+    try {
+      // Check if redis is connected
+      if (this.redis.status !== 'ready') {
+        return false;
+      }
+      // Try a simple ping
+      const result = await this.redis.ping();
+      return result === 'PONG';
+    } catch (error) {
+      this.logger.error(`Redis health check failed: ${error.message}`);
+      return false;
+    }
+  }
 }

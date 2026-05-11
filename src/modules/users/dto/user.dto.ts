@@ -4,14 +4,17 @@ import {
   IsOptional,
   IsUrl,
   MaxLength,
+  MinLength,
   Matches,
   IsEmail,
+  IsArray,
 } from 'class-validator';
 
 export class UpdateUserDto {
   @ApiPropertyOptional({ example: 'johndoe' })
   @IsOptional()
   @IsString()
+  @MinLength(3, { message: 'Username must be at least 3 characters' })
   @MaxLength(50)
   @Matches(/^[a-zA-Z0-9_-]+$/, {
     message:
@@ -39,6 +42,11 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   bio?: string;
+
+  @ApiPropertyOptional({ example: ['Tech & AI', 'Music'] })
+  @IsOptional()
+  @IsArray()
+  interests?: string[];
 }
 
 export class UserResponseDto {
@@ -62,6 +70,9 @@ export class UserResponseDto {
 
   @ApiPropertyOptional()
   bio?: string;
+
+  @ApiPropertyOptional()
+  interests?: string[];
 
   @ApiProperty()
   isVerified: boolean;
